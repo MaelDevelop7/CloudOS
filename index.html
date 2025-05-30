@@ -216,7 +216,7 @@
                         if (response === "<clear>") {
                             output.innerHTML = "";
                         } else {
-                            output.innerHTML += `<div>${response}</div>`;
+                            output.innerHTML += `<div style="white-space: pre-wrap; font-family: monospace;">${response}</div>`;
                         }
                         output.scrollTop = output.scrollHeight;
                         input.value = "";
@@ -327,120 +327,127 @@
                 searchInput.style.outline = 'none';
 
                 const searchBtn = document.createElement('button');
-                searchBtn.textContent = 'Rechercher';
+                searchBtn.textContent = 'Go';
                 searchBtn.style.border = '1px solid #555';
                 searchBtn.style.borderLeft = 'none';
-                searchBtn.style.borderRadius = '0 4px 4px 0';
                 searchBtn.style.backgroundColor = '#61afef';
                 searchBtn.style.color = 'white';
-                searchBtn.style.cursor = 'pointer';
                 searchBtn.style.padding = '6px 12px';
+                searchBtn.style.borderRadius = '0 4px 4px 0';
+                searchBtn.style.cursor = 'pointer';
 
-                searchBtn.onmouseenter = () => searchBtn.style.backgroundColor = '#52a0d9';
-                searchBtn.onmouseleave = () => searchBtn.style.backgroundColor = '#61afef';
+                searchBtn.onclick = () => {
+                    let query = encodeURIComponent(searchInput.value.trim());
+                    if (query) {
+                        iframe.src = `https://fr.wikipedia.org/wiki/${query}`;
+                    }
+                };
 
                 searchDiv.appendChild(searchInput);
                 searchDiv.appendChild(searchBtn);
 
                 const iframe = document.createElement('iframe');
-                iframe.src = 'https://fr.wikipedia.org/wiki/Accueil'; // page d’accueil Wikipédia en français
+                iframe.src = "https://fr.wikipedia.org/wiki/Accueil";
                 iframe.title = "Navigateur Wikipédia";
-                iframe.setAttribute('allowfullscreen', '');
                 iframe.style.flexGrow = '1';
                 iframe.style.border = 'none';
                 iframe.style.borderRadius = '4px';
 
                 iframeContainer.appendChild(searchDiv);
                 iframeContainer.appendChild(iframe);
+
                 content.appendChild(iframeContainer);
 
-                win.style.width = '900px';
-                win.style.height = '600px';
-
-                function loadWikiPage(query) {
-                    if (!query.trim()) return;
-                    // Encode la requête pour URL
-                    const encodedQuery = encodeURIComponent(query.trim().replace(/\s+/g, '_'));
-                    iframe.src = `https://fr.wikipedia.org/wiki/${encodedQuery}`;
-                }
-
-                searchBtn.onclick = () => loadWikiPage(searchInput.value);
-                searchInput.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        loadWikiPage(searchInput.value);
-                    }
-                });
+                win.style.width = '600px';
+                win.style.height = '500px';
             }
 
             win.appendChild(content);
+
+            // Drag & Drop
+            let isDragging = false;
+            let dragOffsetX = 0;
+            let dragOffsetY = 0;
+
+            bar.addEventListener("mousedown", (e) => {
+                isDragging = true;
+                dragOffsetX = e.clientX - win.offsetLeft;
+                dragOffsetY = e.clientY - win.offsetTop;
+                win.style.cursor = "grabbing";
+                bar.style.cursor = "grabbing";
+                win.style.zIndex = 10000;
+            });
+
+            window.addEventListener("mouseup", () => {
+                if (isDragging) {
+                    isDragging = false;
+                    win.style.cursor = "default";
+                    bar.style.cursor = "grab";
+                    win.style.zIndex = 10 + windowCount++;
+                }
+            });
+
+            window.addEventListener("mousemove", (e) => {
+                if (isDragging) {
+                    win.style.left = e.clientX - dragOffsetX + "px";
+                    win.style.top = e.clientY - dragOffsetY + "px";
+                }
+            });
+
             document.getElementById("desktop").appendChild(win);
-
-            // Drag & drop pour fenêtre
-            dragElement(win, bar);
         }
 
-        function handleCommand(cmd, createWindow) {
-            if (!cmd) return "";
-            const parts = cmd.trim().split(" ");
-            const command = parts[0].toLowerCase();
+        function handleCommand(command, createWindowFn) {
+            const cmd = command.toLowerCase();
 
-            switch (command) {
-                case "help":
-                    return `Commandes disponibles: help, clear, echo [text], ls, open [filename]`;
-                case "clear":
-                    return "<clear>";
-                case "echo":
-                    return parts.slice(1).join(" ");
-                case "ls":
-                    const files = JSON.parse(localStorage.getItem("files") || "[]");
-                    if (files.length === 0) return "Aucun fichier.";
-                    return files.map(f => f.name).join("  ");
-                case "open":
-                    if (parts.length < 2) return "Usage: open [filename]";
-                    const filename = parts.slice(1).join(" ");
-                    const allFiles = JSON.parse(localStorage.getItem("files") || "[]");
-                    const file = allFiles.find(f => f.name === filename);
-                    if (!file) return `Fichier "${filename}" non trouvé.`;
-                    // Ouvre une nouvelle fenêtre Notepad avec le contenu
-                    if (typeof createWindow === "function") {
-                        createWindow("Notepad", file.content);
-                        return `Ouverture de "${filename}" dans Notepad.`;
-                    } else {
-                        return "Erreur interne: impossible d'ouvrir Notepad.";
-                    }
-                default:
-                    return "Commande inconnue. Tapez 'help' pour la liste des commandes.";
-            }
-        }
+            if (cmd === "help") {
+                return `
+Available commands:
+- help: Show this help message
+- clear: Clear the terminal output
+- notepad: Open Notepad window
+- neofetch: Display system info
+- tictactoe: Open Tic Tac Toe game
+- browser: Open Wikipedia browser
+- files: Open Files manager
+`;
+            } else if (cmd === "clear") {
+                return "<clear>";
+            } else if (cmd === "notepad") {
+                createWindowFn("Notepad");
+                return "Opening Notepad...";
+            } else if (cmd === "tictactoe") {
+                createWindowFn("TicTacToe");
+                return "Opening Tic Tac Toe...";
+            } else if (cmd === "browser") {
+                createWindowFn("Navigateur");
+                return "Opening Browser...";
+            } else if (cmd === "files") {
+                createWindowFn("Files");
+                return "Opening Files manager...";
+            } else if (cmd === "neofetch") {
+    const ua = navigator.userAgent;
+    const platform = navigator.platform;
+    const language = navigator.language;
+    const cores = navigator.hardwareConcurrency || "unknown";
+    const memory = navigator.deviceMemory || "unknown";
 
-        // Fonction drag and drop
-        function dragElement(elmnt, handle) {
-            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-            handle.onmousedown = dragMouseDown;
-
-            function dragMouseDown(e) {
-                e.preventDefault();
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                document.onmouseup = closeDragElement;
-                document.onmousemove = elementDrag;
-                handle.style.cursor = 'grabbing';
-            }
-
-            function elementDrag(e) {
-                e.preventDefault();
-                pos1 = pos3 - e.clientX;
-                pos2 = pos4 - e.clientY;
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-                elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-            }
-
-            function closeDragElement() {
-                document.onmouseup = null;
-                document.onmousemove = null;
-                handle.style.cursor = 'grab';
+    return `
+${"███████╗ ██████╗ ██████╗ ███████╗███████╗".split("").join(" ")}
+${"██╔════╝██╔═══██╗██╔══██╗██╔════╝██╔════╝".split("").join(" ")}
+${"█████╗  ██║   ██║██████╔╝█████╗  █████╗  ".split("").join(" ")}
+${"██╔══╝  ██║   ██║██╔═══╝ ██╔══╝  ██╔══╝  ".split("").join(" ")}
+${"███████╗╚██████╔╝██║     ███████╗███████╗".split("").join(" ")}
+${"╚══════╝ ╚═════╝ ╚═╝     ╚══════╝╚══════╝".split("").join(" ")}
+-----------------------------------------------------
+User Agent: ${ua}
+Platform: ${platform}
+Language: ${language}
+CPU Cores: ${cores}
+Memory (GB): ${memory}
+`;
+} else {
+                return `Command not found: ${command}`;
             }
         }
     </script>
