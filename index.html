@@ -1,416 +1,350 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudOS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #282c34; /* Dark background */
-            color: #abb2bf; /* Light text */
-            overflow: hidden; /* Prevent scrolling */
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-        .window {
-            background-color: #3c4046; /* Darker grey for windows */
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            position: absolute;
-            min-width: 300px;
-            min-height: 200px;
-            display: flex;
-            flex-direction: column;
-            resize: both; /* Allow resizing */
-            overflow: hidden;
-        }
-        .title-bar {
-            background-color: #21252b; /* Even darker for title bar */
-            color: #fff;
-            padding: 8px 12px;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: grab;
-            font-weight: bold;
-        }
-        .title-bar button {
-            background-color: #e74c3c; /* Red close button */
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 4px 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.2s;
-        }
-        .title-bar button:hover {
-            background-color: #c0392b;
-        }
-        .window-content {
-            flex-grow: 1;
-            padding: 10px;
-            background-color: #3c4046;
-            color: #abb2bf;
-            display: flex;
-            flex-direction: column;
-        }
-        .window-content textarea,
-        .window-content input {
-            background-color: #21252b;
-            border: 1px solid #555;
-            border-radius: 4px;
-            padding: 8px;
-            color: #abb2bf;
-            font-family: monospace;
-            outline: none;
-        }
-        .window-content button {
-            background-color: #61afef; /* Blue for action buttons */
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 8px 12px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background-color 0.2s;
-        }
-        .window-content button:hover {
-            background-color: #52a0d9;
-        }
-        .window-content hr {
-            border-color: #555;
-            margin: 10px 0;
-        }
-        .taskbar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: #21252b;
-            padding: 10px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            border-top: 1px solid #555;
-        }
-        .taskbar button {
-            background-color: #61afef;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 8px 15px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .taskbar button:hover {
-            background-color: #52a0d9;
-        }
-        /* Styles for the iframe */
-        .iframe-container {
-            flex-grow: 1; /* Allows the iframe to fill available space */
-            display: flex;
-            flex-direction: column;
-        }
-        .iframe-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none; /* Remove iframe default border */
-            border-radius: 4px; /* Match window content border-radius */
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CloudOS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #282c34;
+      color: #abb2bf;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    .window {
+      background-color: #3c4046;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      position: absolute;
+      min-width: 300px;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      resize: both;
+      overflow: hidden;
+    }
+    .title-bar {
+      background-color: #21252b;
+      color: #fff;
+      padding: 8px 12px;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: grab;
+      font-weight: bold;
+    }
+    .title-bar button {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .title-bar button:hover {
+      background-color: #c0392b;
+    }
+    .window-content {
+      flex-grow: 1;
+      padding: 10px;
+      background-color: #3c4046;
+      color: #abb2bf;
+      display: flex;
+      flex-direction: column;
+    }
+    .window-content textarea,
+    .window-content input {
+      background-color: #21252b;
+      border: 1px solid #555;
+      border-radius: 4px;
+      padding: 8px;
+      color: #abb2bf;
+      font-family: monospace;
+      outline: none;
+    }
+    .window-content button {
+      background-color: #61afef;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 12px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .window-content button:hover {
+      background-color: #52a0d9;
+    }
+    .window-content hr {
+      border-color: #555;
+      margin: 10px 0;
+    }
+    .taskbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: #21252b;
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      border-top: 1px solid #555;
+    }
+    .taskbar button {
+      background-color: #61afef;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 15px;
+      cursor: pointer;
+    }
+    .taskbar button:hover {
+      background-color: #52a0d9;
+    }
+    .iframe-container {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .iframe-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 4px;
+    }
+  </style>
 </head>
 <body>
-    <div id="desktop" class="flex-grow relative"></div>
+  <div id="desktop" class="flex-grow relative"></div>
 
-    <div class="taskbar">
-        <button onclick="window.createWindow('Notepad')">Notepad</button>
-        <button onclick="window.createWindow('Terminal')">Terminal</button>
-        <button onclick="window.createWindow('Files')">Files</button>
-        <button onclick="window.createWindow('TicTacToe')">Tic Tac Toe</button>
-    </div>
+  <div class="taskbar">
+    <button onclick="createWindow('Notepad')">Notepad</button>
+    <button onclick="createWindow('Terminal')">Terminal</button>
+    <button onclick="createWindow('Files')">Files</button>
+    <button onclick="createWindow('TicTacToe')">Tic Tac Toe</button>
+    <button onclick="createWindow('Navigateur')">Browser</button>
+  </div>
 
-    <script type="module">
-        let windowCount = 0;
+  <script>
+    let windowCount = 0;
 
-        export function createWindow(title, contentToOpen = null) {
-            const win = document.createElement("div");
-            win.className = "window";
-            win.style.zIndex = 10 + windowCount++;
-            win.style.left = `${50 + windowCount * 20}px`;
-            win.style.top = `${50 + windowCount * 20}px`;
+    function createWindow(title, contentToOpen = null) {
+      const win = document.createElement("div");
+      win.className = "window";
+      win.style.zIndex = 10 + windowCount++;
+      win.style.left = `${50 + windowCount * 20}px`;
+      win.style.top = `${50 + windowCount * 20}px`;
 
-            const bar = document.createElement("div");
-            bar.className = "title-bar";
+      const bar = document.createElement("div");
+      bar.className = "title-bar";
 
-            const titleSpan = document.createElement("span");
-            titleSpan.textContent = title;
+      const titleSpan = document.createElement("span");
+      titleSpan.textContent = title;
 
-            const closeBtn = document.createElement("button");
-            closeBtn.textContent = "X";
-            closeBtn.onclick = () => win.remove();
+      const closeBtn = document.createElement("button");
+      closeBtn.textContent = "X";
+      closeBtn.onclick = () => win.remove();
 
-            bar.appendChild(titleSpan);
-            bar.appendChild(closeBtn);
-            win.appendChild(bar);
+      bar.appendChild(titleSpan);
+      bar.appendChild(closeBtn);
+      win.appendChild(bar);
 
-            const content = document.createElement("div");
-            content.style.padding = "10px";
-            content.className = "window-content";
+      const content = document.createElement("div");
+      content.className = "window-content";
 
-            if (title === "Notepad") {
-                const textarea = document.createElement("textarea");
-                textarea.style.width = "100%";
-                textarea.style.height = "150px";
-                textarea.value = contentToOpen !== null ? contentToOpen : localStorage.getItem("notepad") || "";
+      if (title === "Notepad") {
+        const textarea = document.createElement("textarea");
+        textarea.style.width = "100%";
+        textarea.style.height = "150px";
+        textarea.value = contentToOpen !== null ? contentToOpen : localStorage.getItem("notepad") || "";
 
-                const saveBtn = document.createElement("button");
-                saveBtn.textContent = "Save";
-                saveBtn.onclick = () => {
-                    console.log("Content saved!"); // Replaced alert
-                    localStorage.setItem("notepad", textarea.value);
-                };
+        const saveBtn = document.createElement("button");
+        saveBtn.textContent = "Save";
+        saveBtn.onclick = () => {
+          localStorage.setItem("notepad", textarea.value);
+          console.log("Saved!");
+        };
 
-                content.appendChild(textarea);
-                content.appendChild(document.createElement("br"));
-                content.appendChild(saveBtn);
-            } else if (title === "Terminal") {
-                const output = document.createElement("div");
-                output.style.height = "150px";
-                output.style.overflowY = "auto";
-                output.style.background = "#000";
-                output.style.color = "#0f0";
-                output.style.fontFamily = "monospace";
-                output.style.padding = "5px";
-                output.innerHTML = `<div>Welcome to CloudTerminal. Type 'help'.</div>`;
+        content.appendChild(textarea);
+        content.appendChild(document.createElement("br"));
+        content.appendChild(saveBtn);
+      } else if (title === "Terminal") {
+        const output = document.createElement("div");
+        output.style.height = "150px";
+        output.style.overflowY = "auto";
+        output.style.background = "#000";
+        output.style.color = "#0f0";
+        output.style.fontFamily = "monospace";
+        output.style.padding = "5px";
+        output.innerHTML = `<div>Welcome to CloudTerminal. Type 'help'.</div>`;
 
-                const input = document.createElement("input");
-                input.type = "text";
-                input.style.width = "100%";
-                input.style.fontFamily = "monospace";
-                input.style.padding = "4px";
-                input.style.border = "none";
-                input.style.outline = "none";
+        const input = document.createElement("input");
+        input.type = "text";
+        input.style.width = "100%";
+        input.style.fontFamily = "monospace";
 
-                input.addEventListener("keydown", (e) => {
-                    if (e.key === "Enter") {
-                        const cmd = input.value.trim();
-                        const response = handleCommand(cmd);
-                        output.innerHTML += `<div><span style="color:#0ff;">$ ${cmd}</span></div>`;
-                        if (response === "<clear>") {
-                            output.innerHTML = "";
-                        } else {
-                            output.innerHTML += `<div>${response}</div>`;
-                        }
-                        output.scrollTop = output.scrollHeight;
-                        input.value = "";
-                    }
-                });
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            const cmd = input.value.trim();
+            const response = handleCommand(cmd);
+            output.innerHTML += `<div><span style="color:#0ff;">$ ${cmd}</span></div>`;
+            if (response === "<clear>") {
+              output.innerHTML = "";
+            } else {
+              output.innerHTML += `<div>${response}</div>`;
+            }
+            output.scrollTop = output.scrollHeight;
+            input.value = "";
+          }
+        });
 
-                content.appendChild(output);
-                content.appendChild(input);
-            } else if (title === "Files") {
-                const fileList = document.createElement("ul");
-                fileList.style.listStyle = "none";
-                fileList.style.padding = "0";
+        content.appendChild(output);
+        content.appendChild(input);
+      } else if (title === "Files") {
+        const fileList = document.createElement("ul");
+        fileList.style.listStyle = "none";
+        fileList.style.padding = "0";
 
-                function refreshFileList() {
-                    fileList.innerHTML = "";
-                    const files = JSON.parse(localStorage.getItem("files") || "[]");
-                    if (files.length === 0) {
-                        fileList.innerHTML = "<li>No files created.</li>";
-                    } else {
-                        files.forEach((file, index) => {
-                            const li = document.createElement("li");
-                            li.style.marginBottom = "5px";
+        function refreshFileList() {
+          fileList.innerHTML = "";
+          const files = JSON.parse(localStorage.getItem("files") || "[]");
+          if (files.length === 0) {
+            fileList.innerHTML = "<li>No files created.</li>";
+          } else {
+            files.forEach((file, index) => {
+              const li = document.createElement("li");
+              li.style.marginBottom = "5px";
 
-                            const nameSpan = document.createElement("span");
-                            nameSpan.textContent = file.name;
-                            nameSpan.style.cursor = "pointer";
-                            nameSpan.style.marginRight = "10px";
-                            nameSpan.onclick = () => {
-                                console.log(`Content of "${file.name}":\n\n${file.content}`); // Replaced alert
-                            };
+              const nameSpan = document.createElement("span");
+              nameSpan.textContent = file.name;
+              nameSpan.style.cursor = "pointer";
+              nameSpan.style.marginRight = "10px";
+              nameSpan.onclick = () => {
+                createWindow("Notepad", file.content);
+              };
 
-                            const delBtn = document.createElement("button");
-                            delBtn.textContent = "Delete";
-                            delBtn.onclick = () => {
-                                files.splice(index, 1);
-                                localStorage.setItem("files", JSON.stringify(files));
-                                refreshFileList();
-                            };
-
-                            li.appendChild(nameSpan);
-                            li.appendChild(delBtn);
-                            fileList.appendChild(li);
-                        });
-                    }
-                }
-
-                const nameInput = document.createElement("input");
-                nameInput.placeholder = "File Name";
-                nameInput.style.marginRight = "5px";
-
-                const contentInput = document.createElement("input");
-                contentInput.placeholder = "Content";
-                contentInput.style.marginRight = "5px";
-
-                const addBtn = document.createElement("button");
-                addBtn.textContent = "Create";
-                addBtn.onclick = () => {
-                    const files = JSON.parse(localStorage.getItem("files") || "[]");
-                    if (files.some(f => f.name === nameInput.value)) {
-                        console.log(`Error: File "${nameInput.value}" already exists.`);
-                        return;
-                    }
-                    files.push({
-                        name: nameInput.value,
-                        content: contentInput.value
-                    });
-                    localStorage.setItem("files", JSON.stringify(files));
-                    nameInput.value = "";
-                    contentInput.value = "";
-                    refreshFileList();
-                };
-
-                content.appendChild(nameInput);
-                content.appendChild(contentInput);
-                content.appendChild(addBtn);
-                content.appendChild(document.createElement("hr"));
-                content.appendChild(fileList);
-
+              const delBtn = document.createElement("button");
+              delBtn.textContent = "Delete";
+              delBtn.onclick = () => {
+                files.splice(index, 1);
+                localStorage.setItem("files", JSON.stringify(files));
                 refreshFileList();
-            } else if (title === "TicTacToe") {
-                // Create a container for the iframe to manage its layout
-                const iframeContainer = document.createElement('div');
-                iframeContainer.classList.add('iframe-container');
+              };
 
-                const iframe = document.createElement('iframe');
-                iframe.src = "https://maelgruand1.github.io/TicTac-Game/";
-                iframe.title = "Tic Tac Toe Game"; // Add a title for accessibility
-                iframe.setAttribute('allowfullscreen', ''); // Allow full screen if supported by content
-
-                iframeContainer.appendChild(iframe);
-                content.appendChild(iframeContainer);
-
-                // Adjust window size for the game
-                win.style.width = '350px';
-                win.style.height = '500px';
-            } else {
-                content.innerHTML = `<p>Application "${title}" running...</p>`;
-            }
-
-            win.appendChild(content);
-            makeDraggable(win);
-            document.getElementById("desktop").appendChild(win);
+              li.appendChild(nameSpan);
+              li.appendChild(delBtn);
+              fileList.appendChild(li);
+            });
+          }
         }
 
-        function makeDraggable(el) {
-            const bar = el.querySelector(".title-bar");
-            let offsetX = 0,
-                offsetY = 0,
-                isDragging = false;
+        const nameInput = document.createElement("input");
+        nameInput.placeholder = "File Name";
+        nameInput.style.marginRight = "5px";
 
-            bar.addEventListener("mousedown", (e) => {
-                isDragging = true;
-                offsetX = e.clientX - el.offsetLeft;
-                offsetY = e.clientY - el.offsetTop;
-                el.style.zIndex = 10 + windowCount++;
-            });
+        const contentInput = document.createElement("input");
+        contentInput.placeholder = "Content";
+        contentInput.style.marginRight = "5px";
 
-            document.addEventListener("mousemove", (e) => {
-                if (isDragging) {
-                    el.style.left = e.clientX - offsetX + "px";
-                    el.style.top = e.clientY - offsetY + "px";
-                }
-            });
+        const addBtn = document.createElement("button");
+        addBtn.textContent = "Create";
+        addBtn.onclick = () => {
+          const files = JSON.parse(localStorage.getItem("files") || "[]");
+          if (files.some(f => f.name === nameInput.value)) {
+            console.log("File already exists");
+            return;
+          }
+          files.push({ name: nameInput.value, content: contentInput.value });
+          localStorage.setItem("files", JSON.stringify(files));
+          nameInput.value = "";
+          contentInput.value = "";
+          refreshFileList();
+        };
 
-            document.addEventListener("mouseup", () => {
-                isDragging = false;
-            });
+        content.appendChild(nameInput);
+        content.appendChild(contentInput);
+        content.appendChild(addBtn);
+        content.appendChild(document.createElement("hr"));
+        content.appendChild(fileList);
+        refreshFileList();
+      } else if (title === "TicTacToe") {
+        const iframeContainer = document.createElement('div');
+        iframeContainer.classList.add('iframe-container');
+
+        const iframe = document.createElement('iframe');
+        iframe.src = "https://maelgruand1.github.io/TicTac-Game/";
+        iframe.title = "Tic Tac Toe Game";
+        iframe.setAttribute('allowfullscreen', '');
+
+        iframeContainer.appendChild(iframe);
+        content.appendChild(iframeContainer);
+
+        win.style.width = '350px';
+        win.style.height = '500px';
+      } else if (title === "Navigateur") {
+        const iframeContainer = document.createElement('div');
+        iframeContainer.classList.add('iframe-container');
+
+        const iframe = document.createElement('iframe');
+        iframe.src = "https://www.google.com/";
+        iframe.title = "Google";
+        iframe.setAttribute('allowfullscreen', '');
+
+        iframeContainer.appendChild(iframe);
+        content.appendChild(iframeContainer);
+
+        win.style.width = '800px';
+        win.style.height = '600px';
+      } else {
+        content.innerHTML = `<p>Application "${title}" running...</p>`;
+      }
+
+      win.appendChild(content);
+      makeDraggable(win);
+      document.getElementById("desktop").appendChild(win);
+    }
+
+    function makeDraggable(el) {
+      const bar = el.querySelector(".title-bar");
+      let offsetX = 0, offsetY = 0, isDragging = false;
+
+      bar.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        offsetX = e.clientX - el.offsetLeft;
+        offsetY = e.clientY - el.offsetTop;
+        el.style.zIndex = 10 + windowCount++;
+      });
+
+      document.addEventListener("mousemove", (e) => {
+        if (isDragging) {
+          el.style.left = e.clientX - offsetX + "px";
+          el.style.top = e.clientY - offsetY + "px";
         }
+      });
 
-        const allCommands = "help, echo [text], date, clear, notepad, whoami, apps, create [name] [content], notepad [filename], ls";
-        const notepadBtn = `<button onclick="window.createWindow('Notepad')">Notepad</button>`;
-        const terminalBtn = `<button onclick="window.createWindow('Terminal')">Terminal</button>`;
-        const fileManagerBtn = `<button onclick="window.createWindow('Files')">Files</button>`;
-        const ticTacToeBtn = `<button onclick="window.createWindow('TicTacToe')">Tic Tac Toe</button>`; // New button for Tic Tac Toe
-        const allApps = `
-            <div style="margin-top:5px;">${notepadBtn}</div>
-            <div style="margin-top:5px;">${terminalBtn}</div>
-            <div style="margin-top:5px;">${fileManagerBtn}</div>
-            <div style="margin-top:5px;">${ticTacToeBtn}</div>
-        `;
+      document.addEventListener("mouseup", () => {
+        isDragging = false;
+      });
+    }
 
-        function handleCommand(cmd) {
-            if (cmd === "help") {
-                return `Available commands: ${allCommands}`;
-            } else if (cmd.startsWith("echo ")) {
-                return cmd.slice(5);
-            } else if (cmd === "date") {
-                return new Date().toLocaleString();
-            } else if (cmd === "clear" || cmd === "cls") {
-                return "<clear>";
-            } else if (cmd === "notepad") {
-                createWindow("Notepad");
-                return 'Opening Notepad...';
-            } else if (cmd.startsWith("notepad ")) {
-                const fileName = cmd.slice(8).trim();
-                const files = JSON.parse(localStorage.getItem("files") || "[]");
-                const file = files.find(f => f.name === fileName);
-                if (file) {
-                    createWindow("Notepad", file.content);
-                    return `Opening "${fileName}" in Notepad...`;
-                } else {
-                    return `File "${fileName}" not found.`;
-                }
-            } else if (cmd.startsWith("create ")) {
-                const parts = cmd.slice(7).split(" ");
-                if (parts.length >= 2) {
-                    const fileName = parts[0];
-                    const fileContent = parts.slice(1).join(" ");
-                    const files = JSON.parse(localStorage.getItem("files") || "[]");
-
-                    const existingFileIndex = files.findIndex(f => f.name === fileName);
-                    if (existingFileIndex > -1) {
-                        return `Error: File "${fileName}" already exists.`;
-                    }
-
-                    files.push({
-                        name: fileName,
-                        content: fileContent
-                    });
-                    localStorage.setItem("files", JSON.stringify(files));
-                    return `File "${fileName}" created successfully.`;
-                } else {
-                    return `Usage: create [name] [content]`;
-                }
-            } else if (cmd === "whoami") {
-                return 'Hello CloudOS user';
-            } else if (cmd === "apps") {
-                return allApps;
-            } else if (cmd === "ls") {
-                const files = JSON.parse(localStorage.getItem("files") || "[]");
-                if (files.length === 0) {
-                    return "No files in the file system.";
-                } else {
-                    const fileNames = files.map(file => file.name).join("<br>");
-                    return `Files:<br>${fileNames}`;
-                }
-            } else {
-                return "Unknown command";
-            }
-        }
-
-        // Make accessible from HTML
-        window.createWindow = createWindow;
-    </script>
+    function handleCommand(cmd) {
+      if (cmd === "help") return "Commands: help, echo [text], date, clear, whoami, apps";
+      if (cmd.startsWith("echo ")) return cmd.slice(5);
+      if (cmd === "date") return new Date().toString();
+      if (cmd === "clear") return "<clear>";
+      if (cmd === "whoami") return "User: cloud_user";
+      if (cmd === "apps") return "Apps: Notepad, Terminal, Files, TicTacToe, Navigateur";
+      return "Command not found";
+    }
+  </script>
 </body>
 </html>
