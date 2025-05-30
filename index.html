@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -113,15 +113,28 @@
         .taskbar button:hover {
             background-color: #52a0d9;
         }
+        /* Styles for the iframe */
+        .iframe-container {
+            flex-grow: 1; /* Allows the iframe to fill available space */
+            display: flex;
+            flex-direction: column;
+        }
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none; /* Remove iframe default border */
+            border-radius: 4px; /* Match window content border-radius */
+        }
     </style>
 </head>
 <body>
     <div id="desktop" class="flex-grow relative"></div>
 
     <div class="taskbar">
-        <button onclick="window.createWindow('Bloc-notes')">Bloc-notes</button>
+        <button onclick="window.createWindow('Notepad')">Notepad</button>
         <button onclick="window.createWindow('Terminal')">Terminal</button>
         <button onclick="window.createWindow('Files')">Files</button>
+        <button onclick="window.createWindow('TicTacToe')">Tic Tac Toe</button>
     </div>
 
     <script type="module">
@@ -152,16 +165,16 @@
             content.style.padding = "10px";
             content.className = "window-content";
 
-            if (title === "Bloc-notes") {
+            if (title === "Notepad") {
                 const textarea = document.createElement("textarea");
                 textarea.style.width = "100%";
                 textarea.style.height = "150px";
                 textarea.value = contentToOpen !== null ? contentToOpen : localStorage.getItem("notepad") || "";
 
                 const saveBtn = document.createElement("button");
-                saveBtn.textContent = "Enregistrer";
+                saveBtn.textContent = "Save";
                 saveBtn.onclick = () => {
-                    console.log("Contenu enregistré !"); // Replaced alert
+                    console.log("Content saved!"); // Replaced alert
                     localStorage.setItem("notepad", textarea.value);
                 };
 
@@ -176,7 +189,7 @@
                 output.style.color = "#0f0";
                 output.style.fontFamily = "monospace";
                 output.style.padding = "5px";
-                output.innerHTML = `<div>Bienvenue dans CloudTerminal. Tapez 'help'.</div>`;
+                output.innerHTML = `<div>Welcome to CloudTerminal. Type 'help'.</div>`;
 
                 const input = document.createElement("input");
                 input.type = "text";
@@ -212,7 +225,7 @@
                     fileList.innerHTML = "";
                     const files = JSON.parse(localStorage.getItem("files") || "[]");
                     if (files.length === 0) {
-                        fileList.innerHTML = "<li>Aucun fichier créé.</li>";
+                        fileList.innerHTML = "<li>No files created.</li>";
                     } else {
                         files.forEach((file, index) => {
                             const li = document.createElement("li");
@@ -223,11 +236,11 @@
                             nameSpan.style.cursor = "pointer";
                             nameSpan.style.marginRight = "10px";
                             nameSpan.onclick = () => {
-                                console.log(`Contenu de "${file.name}":\n\n${file.content}`); // Replaced alert
+                                console.log(`Content of "${file.name}":\n\n${file.content}`); // Replaced alert
                             };
 
                             const delBtn = document.createElement("button");
-                            delBtn.textContent = "Supprimer";
+                            delBtn.textContent = "Delete";
                             delBtn.onclick = () => {
                                 files.splice(index, 1);
                                 localStorage.setItem("files", JSON.stringify(files));
@@ -242,19 +255,19 @@
                 }
 
                 const nameInput = document.createElement("input");
-                nameInput.placeholder = "Nom du fichier";
+                nameInput.placeholder = "File Name";
                 nameInput.style.marginRight = "5px";
 
                 const contentInput = document.createElement("input");
-                contentInput.placeholder = "Contenu";
+                contentInput.placeholder = "Content";
                 contentInput.style.marginRight = "5px";
 
                 const addBtn = document.createElement("button");
-                addBtn.textContent = "Créer";
+                addBtn.textContent = "Create";
                 addBtn.onclick = () => {
                     const files = JSON.parse(localStorage.getItem("files") || "[]");
                     if (files.some(f => f.name === nameInput.value)) {
-                        console.log(`Erreur: Le fichier "${nameInput.value}" existe déjà.`);
+                        console.log(`Error: File "${nameInput.value}" already exists.`);
                         return;
                     }
                     files.push({
@@ -274,8 +287,24 @@
                 content.appendChild(fileList);
 
                 refreshFileList();
+            } else if (title === "TicTacToe") {
+                // Create a container for the iframe to manage its layout
+                const iframeContainer = document.createElement('div');
+                iframeContainer.classList.add('iframe-container');
+
+                const iframe = document.createElement('iframe');
+                iframe.src = "https://maelgruand1.github.io/TicTac-Game/";
+                iframe.title = "Tic Tac Toe Game"; // Add a title for accessibility
+                iframe.setAttribute('allowfullscreen', ''); // Allow full screen if supported by content
+
+                iframeContainer.appendChild(iframe);
+                content.appendChild(iframeContainer);
+
+                // Adjust window size for the game
+                win.style.width = '350px';
+                win.style.height = '500px';
             } else {
-                content.innerHTML = `<p>Application "${title}" en cours...</p>`;
+                content.innerHTML = `<p>Application "${title}" running...</p>`;
             }
 
             win.appendChild(content);
@@ -308,19 +337,21 @@
             });
         }
 
-        const allCommands = "help, echo [texte], date, clear, notepad, whoami, apps, create [nom] [contenu], notepad [nom_fichier], ls";
-        const notepadBtn = `<button onclick="window.createWindow('Bloc-notes')">Bloc-Notes</button>`;
+        const allCommands = "help, echo [text], date, clear, notepad, whoami, apps, create [name] [content], notepad [filename], ls";
+        const notepadBtn = `<button onclick="window.createWindow('Notepad')">Notepad</button>`;
         const terminalBtn = `<button onclick="window.createWindow('Terminal')">Terminal</button>`;
         const fileManagerBtn = `<button onclick="window.createWindow('Files')">Files</button>`;
+        const ticTacToeBtn = `<button onclick="window.createWindow('TicTacToe')">Tic Tac Toe</button>`; // New button for Tic Tac Toe
         const allApps = `
             <div style="margin-top:5px;">${notepadBtn}</div>
             <div style="margin-top:5px;">${terminalBtn}</div>
             <div style="margin-top:5px;">${fileManagerBtn}</div>
+            <div style="margin-top:5px;">${ticTacToeBtn}</div>
         `;
 
         function handleCommand(cmd) {
             if (cmd === "help") {
-                return `Commandes disponibles : ${allCommands}`;
+                return `Available commands: ${allCommands}`;
             } else if (cmd.startsWith("echo ")) {
                 return cmd.slice(5);
             } else if (cmd === "date") {
@@ -328,17 +359,17 @@
             } else if (cmd === "clear" || cmd === "cls") {
                 return "<clear>";
             } else if (cmd === "notepad") {
-                createWindow("Bloc-notes");
-                return 'Ouverture de Bloc-notes...';
+                createWindow("Notepad");
+                return 'Opening Notepad...';
             } else if (cmd.startsWith("notepad ")) {
                 const fileName = cmd.slice(8).trim();
                 const files = JSON.parse(localStorage.getItem("files") || "[]");
                 const file = files.find(f => f.name === fileName);
                 if (file) {
-                    createWindow("Bloc-notes", file.content);
-                    return `Ouverture de "${fileName}" dans Bloc-notes...`;
+                    createWindow("Notepad", file.content);
+                    return `Opening "${fileName}" in Notepad...`;
                 } else {
-                    return `Fichier "${fileName}" non trouvé.`;
+                    return `File "${fileName}" not found.`;
                 }
             } else if (cmd.startsWith("create ")) {
                 const parts = cmd.slice(7).split(" ");
@@ -349,7 +380,7 @@
 
                     const existingFileIndex = files.findIndex(f => f.name === fileName);
                     if (existingFileIndex > -1) {
-                        return `Erreur: Le fichier "${fileName}" existe déjà.`;
+                        return `Error: File "${fileName}" already exists.`;
                     }
 
                     files.push({
@@ -357,9 +388,9 @@
                         content: fileContent
                     });
                     localStorage.setItem("files", JSON.stringify(files));
-                    return `Fichier "${fileName}" créé avec succès.`;
+                    return `File "${fileName}" created successfully.`;
                 } else {
-                    return `Utilisation: create [nom] [contenu]`;
+                    return `Usage: create [name] [content]`;
                 }
             } else if (cmd === "whoami") {
                 return 'Hello CloudOS user';
@@ -368,20 +399,18 @@
             } else if (cmd === "ls") {
                 const files = JSON.parse(localStorage.getItem("files") || "[]");
                 if (files.length === 0) {
-                    return "Aucun fichier dans le système de fichiers.";
+                    return "No files in the file system.";
                 } else {
                     const fileNames = files.map(file => file.name).join("<br>");
-                    return `Fichiers:<br>${fileNames}`;
+                    return `Files:<br>${fileNames}`;
                 }
             } else {
-                return "Commande inconnue";
+                return "Unknown command";
             }
         }
 
-        // ✅ Rendre accessible depuis HTML
+        // Make accessible from HTML
         window.createWindow = createWindow;
-
-        
     </script>
 </body>
 </html>
