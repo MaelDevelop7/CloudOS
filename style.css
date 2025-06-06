@@ -1,0 +1,147 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #282c34;
+    color: #abb2bf;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.window {
+    background-color: #3c4046;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    min-width: 300px;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    resize: both;
+    overflow: hidden;
+}
+
+.title-bar {
+    background-color: #21252b;
+    color: #fff;
+    padding: 8px 12px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: grab;
+    font-weight: bold;
+}
+
+.title-bar button {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.title-bar button:hover {
+    background-color: #c0392b;
+}
+
+.window-content {
+    flex-grow: 1;
+    padding: 10px;
+    background-color: #3c4046;
+    color: #abb2bf;
+    display: flex;
+    flex-direction: column;
+}
+
+.window-content textarea,
+.window-content input {
+    background-color: #21252b;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 8px;
+    color: #abb2bf;
+    font-family: monospace;
+    outline: none;
+}
+
+.window-content button {
+    background-color: #61afef;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.window-content button:hover {
+    background-color: #52a0d9;
+}
+
+.window-content hr {
+    border-color: #555;
+    margin: 10px 0;
+}
+
+.taskbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #21252b;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    border-top: 1px solid #555;
+}
+
+.taskbar button {
+    background-color: #61afef;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 15px;
+    cursor: pointer;
+}
+
+.taskbar button:hover {
+    background-color: #52a0d9;
+}
+
+.iframe-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.iframe-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 4px;
+}
+
+.window {
+    transition: all 0.25s ease;
+}
+
+#context-menu {
+    position: absolute;
+    display: none;
+    background-color: #333;
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    z-index: 1000;
+}
+#desktop {
+    filter: blur(5px);
+    transition: filter 0.3s ease;
+}

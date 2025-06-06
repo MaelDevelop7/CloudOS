@@ -6,156 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CloudOS</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #282c34;
-            color: #abb2bf;
-            overflow: hidden;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        .window {
-            background-color: #3c4046;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            position: absolute;
-            min-width: 300px;
-            min-height: 200px;
-            display: flex;
-            flex-direction: column;
-            resize: both;
-            overflow: hidden;
-        }
-
-        .title-bar {
-            background-color: #21252b;
-            color: #fff;
-            padding: 8px 12px;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: grab;
-            font-weight: bold;
-        }
-
-        .title-bar button {
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 4px 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .title-bar button:hover {
-            background-color: #c0392b;
-        }
-
-        .window-content {
-            flex-grow: 1;
-            padding: 10px;
-            background-color: #3c4046;
-            color: #abb2bf;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .window-content textarea,
-        .window-content input {
-            background-color: #21252b;
-            border: 1px solid #555;
-            border-radius: 4px;
-            padding: 8px;
-            color: #abb2bf;
-            font-family: monospace;
-            outline: none;
-        }
-
-        .window-content button {
-            background-color: #61afef;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 8px 12px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .window-content button:hover {
-            background-color: #52a0d9;
-        }
-
-        .window-content hr {
-            border-color: #555;
-            margin: 10px 0;
-        }
-
-        .taskbar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: #21252b;
-            padding: 10px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            border-top: 1px solid #555;
-        }
-
-        .taskbar button {
-            background-color: #61afef;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 8px 15px;
-            cursor: pointer;
-        }
-
-        .taskbar button:hover {
-            background-color: #52a0d9;
-        }
-
-        .iframe-container {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .iframe-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            border-radius: 4px;
-        }
-        .window {
-    transition: all 0.25s ease;
-}
-
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <div id="login-screen" style="position: fixed; inset: 0; background: #111; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999;">
+        <h2>Bienvenue sur CloudOS</h2>
+        <input id="login-username" placeholder="Nom d'utilisateur" style="margin: 10px; padding: 10px; color: #111;" />
+        <input id="login-password" type="password" placeholder="Mot de passe" style="margin: 10px; padding: 10px; color: #111;" />
+        <button id="login-button" style="padding: 10px 20px;">Se connecter</button>
+        <div id="login-error" style="color: red; margin-top: 10px;"></div>
+    </div>
+
+
     <div id="desktop" class="flex-grow relative"></div>
 
     <div class="taskbar">
-        <button onclick="createWindow('Notepad')">Notepad</button>
-        <button onclick="createWindow('Terminal')">Terminal</button>
-        <button onclick="createWindow('Files')">Files</button>
-        <button onclick="createWindow('TicTacToe')">Tic Tac Toe</button>
-        <button onclick="createWindow('Navigateur')">Browser</button>
-        <button onclick="createWindow('Paramètres')">Settings</button>
+        <!-- Suppression des attributs onclick ici -->
+        <button>Notepad</button>
+        <button>Terminal</button>
+        <button>Files</button>
+        <button>Tic Tac Toe</button>
+        <button>Browser</button>
+        <button>Settings</button>
     </div>
 
-    <script src="./main.js"></script>
+    <ul id="context-menu" style="display: none; position: absolute; z-index: 100000; background: #333; color: white; list-style: none; padding: 5px 0; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.5); font-family: sans-serif; min-width: 150px;">
+    </ul>
+
+    <script type="module" src="./main.js" defer></script>
 </body>
 
 </html>
