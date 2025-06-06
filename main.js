@@ -30,7 +30,7 @@ Available commands:
 - neofetch   : Display system info
 - tictactoe  : Open Tic Tac Toe game
 - browser    : Open Wikipedia browser
-- files      : Open Files manager
+- files       : Open Files manager
 - settings   : Open settings
 - installer  : Open Web App Installer
         `; // Added installer command
@@ -43,7 +43,7 @@ Available commands:
         createWindowFn("Tic Tac Toe");
         return "Opening Tic Tac Toe...";
     } else if (cmd === "browser") {
-        createWindowFn("Browser");
+        createWindowFn("Browser"); // <-- Le terminal appelle "Browser"
         return "Opening Browser...";
     } else if (cmd === "files") {
         createWindowFn("Files");
@@ -263,7 +263,7 @@ function createWindow(title, contentToOpen = null) {
             }
             files.push({ name: nameInput.value, content: contentInput.value });
             localStorage.setItem("files", JSON.stringify(files));
-            nameInput.value = "";
+            nameInput.value = "";1
             contentInput.value = "";
             refreshFileList();
         };
@@ -294,6 +294,7 @@ function createWindow(title, contentToOpen = null) {
 
     } else if (title === "Paramètres" || title === "Settings") { 
         console.log("Création du contenu pour Paramètres/Settings.");
+        console.log(`Debug: createWindow called with title: "${title}"`); // Debug log for title
         const tabContainer = document.createElement("div");
         const tabHeader = document.createElement("div"); 
         tabHeader.style.display = "flex";
@@ -305,7 +306,7 @@ function createWindow(title, contentToOpen = null) {
         tabButtons.style.display = "flex";
         tabButtons.style.gap = "10px";
 
-        const tabContent = document.createElement("div");
+        const tabContent = document.createElement("div"); 
         tabContent.style.flexGrow = "1";
 
         const performancesBtn = document.createElement("button");
@@ -315,7 +316,7 @@ function createWindow(title, contentToOpen = null) {
         const logoutBtn = document.createElement("button"); 
         logoutBtn.id = "logout-button-settings"; 
         logoutBtn.textContent = "Déconnexion";
-        logoutBtn.className = "ml-auto";
+        // REMOVED: logoutBtn.className = "ml-auto"; // Removed this for better taskbar alignment
         
         tabHeader.appendChild(tabButtons);
         tabHeader.appendChild(logoutBtn);
@@ -375,7 +376,7 @@ function createWindow(title, contentToOpen = null) {
         win.addEventListener("remove", () => clearInterval(interval));
 
         performancesBtn.onclick = () => {
-            tabContent.innerHTML = "";
+            tabContent.innerHTML = ""; 
             tabContent.appendChild(contentPerformance);
         };
 
@@ -665,7 +666,7 @@ function rebuildContextMenu() {
         { label: "📝 Notepad", action: () => createWindow("Notepad") },
         { label: "💻 Terminal", action: () => createWindow("Terminal") },
         { label: "🗂️ Files", action: () => createWindow("Files") },
-        { label: "🌐 Browser", action: () => createWindow("Browser") },
+        { label: "🌐 Browser", action: () => createWindow("Browser") }, // <-- "Browser" est ici
         { label: "⚙️ Settings", action: () => createWindow("Paramètres") },
         { label: "📦 Installer", action: () => createWindow("Installer") }, // Add installer to context menu
         { label: "ℹ️ About", action: () => {
@@ -719,7 +720,7 @@ function rebuildContextMenu() {
             appDisplay.className = "flex items-center gap-2";
 
             const appIcon = document.createElement("img");
-            appIcon.src = app.icon || 'https://placehold.co/16x16/cccccc/000000?text=�'; // Fallback icon for menu
+            appIcon.src = app.icon || 'https://placehold.co/16x16/cccccc/000000?text=🌐'; // Fallback icon for menu
             appIcon.onerror = function() {
                 this.onerror = null; 
                 this.src = 'https://placehold.co/16x16/cccccc/000000?text=🌐'; 
@@ -896,14 +897,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- BLOC POUR LES BOUTONS DE LA BARRE DES TÂCHES ---
     const taskbarElement = document.querySelector('.taskbar');
     if (taskbarElement) {
-        const taskbarButtons = taskbarElement.querySelectorAll('button');
-        console.log("Boutons de la barre des tâches trouvés:", taskbarButtons.length, taskbarButtons); 
+        // Handle the OS start button specifically by its ID
+        const osStartButton = document.getElementById('os-start-button');
+        if (osStartButton) {
+            osStartButton.addEventListener('click', () => {
+                console.log("OS Start Button clicked. Opening About CloudOS window.");
+                createWindow("About CloudOS"); // Or a "Start Menu" function if implemented
+            });
+        }
+
+        // Handle other taskbar buttons based on their text content
+        const taskbarButtons = taskbarElement.querySelectorAll('button:not(#os-start-button)'); // Select all buttons EXCEPT the OS start button
+        console.log("Autres boutons de la barre des tâches trouvés:", taskbarButtons.length, taskbarButtons); 
         taskbarButtons.forEach(button => {
             const title = button.textContent.trim();
-            button.addEventListener('click', () => {
-                console.log(`Bouton de la barre des tâches cliqué: ${title}`); 
-                createWindow(title);
-            });
+            if (title) { // Only attach listener if button has text content
+                button.addEventListener('click', () => {
+                    console.log(`Bouton de la barre des tâches cliqué: ${title}`); 
+                    createWindow(title);
+                });
+            } else {
+                console.warn("Bouton de barre des tâches sans texte trouvé, ignoré:", button);
+            }
         });
     } else {
         console.error("L'élément de la barre des tâches (.taskbar) est introuvable.");
